@@ -1,19 +1,14 @@
 # Sistema de Eventos (Console Java)
 
 ## Sobre o projeto
-Este projeto foi desenvolvido como trabalho de faculdade para a unidade curricular **Programação de Soluções Computacionais**.
-
-Este repositório contém a solução da atividade **Pratique** disponibilizada na matéria.
+Este projeto foi desenvolvido como trabalho de faculdade
 
 - **Universidade:** Universidade Anhembi Morumbi
 - **Curso:** Sistemas de Informação
 - **Unidade Curricular:** Programação de Soluções Computacionais
 - **Semestre:** 1
 
-## Aluno
-- **Nome:** Vinícius Baggio
-- **LinkedIn:** https://www.linkedin.com/in/vbaggio/
-- **E-mail:** vnc.baggio@gmail.com
+Este repositório contém a solução da atividade **Pratique** disponibilizada na matéria.
 
 ## Enunciado
 O enunciado da atividade está disponível em:
