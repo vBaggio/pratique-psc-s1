@@ -1,10 +1,10 @@
-package com.pratique.psc.s1.service;
+package com.pratique.psc.s1.model.service;
 
-import com.pratique.psc.s1.domain.entity.Event;
-import com.pratique.psc.s1.domain.entity.Participation;
-import com.pratique.psc.s1.repository.EventRepository;
-import com.pratique.psc.s1.repository.ParticipationRepository;
-import com.pratique.psc.s1.repository.UserRepository;
+import com.pratique.psc.s1.model.entity.Event;
+import com.pratique.psc.s1.model.entity.Participation;
+import com.pratique.psc.s1.model.repository.EventRepository;
+import com.pratique.psc.s1.model.repository.ParticipationRepository;
+import com.pratique.psc.s1.model.repository.UserRepository;
 
 import java.util.Comparator;
 import java.util.List;

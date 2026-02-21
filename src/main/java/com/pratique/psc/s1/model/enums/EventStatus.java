@@ -1,4 +1,4 @@
-package com.pratique.psc.s1.domain.enums;
+package com.pratique.psc.s1.model.enums;
 
 public enum EventStatus {
     UPCOMING,

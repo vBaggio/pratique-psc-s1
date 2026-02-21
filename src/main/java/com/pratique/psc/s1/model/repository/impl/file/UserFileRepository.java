@@ -1,7 +1,7 @@
-package com.pratique.psc.s1.repository.impl.file;
+package com.pratique.psc.s1.model.repository.impl.file;
 
-import com.pratique.psc.s1.domain.entity.User;
-import com.pratique.psc.s1.repository.UserRepository;
+import com.pratique.psc.s1.model.entity.User;
+import com.pratique.psc.s1.model.repository.UserRepository;
 
 import java.nio.file.Path;
 import java.time.LocalDateTime;

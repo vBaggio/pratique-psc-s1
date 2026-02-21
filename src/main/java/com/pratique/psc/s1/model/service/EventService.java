@@ -1,9 +1,9 @@
-package com.pratique.psc.s1.service;
+package com.pratique.psc.s1.model.service;
 
-import com.pratique.psc.s1.domain.entity.Event;
-import com.pratique.psc.s1.domain.enums.EventCategory;
-import com.pratique.psc.s1.domain.enums.EventStatus;
-import com.pratique.psc.s1.repository.EventRepository;
+import com.pratique.psc.s1.model.entity.Event;
+import com.pratique.psc.s1.model.enums.EventCategory;
+import com.pratique.psc.s1.model.enums.EventStatus;
+import com.pratique.psc.s1.model.repository.EventRepository;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;

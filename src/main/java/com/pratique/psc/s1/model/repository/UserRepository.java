@@ -1,6 +1,6 @@
-package com.pratique.psc.s1.repository;
+package com.pratique.psc.s1.model.repository;
 
-import com.pratique.psc.s1.domain.entity.User;
+import com.pratique.psc.s1.model.entity.User;
 
 import java.util.List;
 import java.util.Optional;

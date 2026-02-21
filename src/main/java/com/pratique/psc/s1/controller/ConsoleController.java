@@ -1,24 +1,22 @@
 package com.pratique.psc.s1.controller;
 
-import com.pratique.psc.s1.domain.entity.Event;
-import com.pratique.psc.s1.domain.entity.User;
-import com.pratique.psc.s1.domain.enums.EventCategory;
-import com.pratique.psc.s1.domain.enums.EventStatus;
-import com.pratique.psc.s1.service.EventService;
-import com.pratique.psc.s1.service.ParticipationService;
-import com.pratique.psc.s1.service.UserService;
+import com.pratique.psc.s1.model.entity.Event;
+import com.pratique.psc.s1.model.entity.User;
+import com.pratique.psc.s1.model.enums.EventCategory;
+import com.pratique.psc.s1.model.enums.EventStatus;
+import com.pratique.psc.s1.model.service.EventService;
+import com.pratique.psc.s1.model.service.ParticipationService;
+import com.pratique.psc.s1.model.service.UserService;
+import com.pratique.psc.s1.view.ConsoleView;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class ConsoleController {
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-
-    private final ConsoleIO io;
+    private final ConsoleView view;
     private final UserService userService;
     private final EventService eventService;
     private final ParticipationService participationService;
@@ -28,7 +26,7 @@ public class ConsoleController {
             EventService eventService,
             ParticipationService participationService
     ) {
-        this.io = new ConsoleIO();
+        this.view = new ConsoleView();
         this.userService = userService;
         this.eventService = eventService;
         this.participationService = participationService;
@@ -38,10 +36,10 @@ public class ConsoleController {
         boolean running = true;
 
         while (running) {
-            io.printMainMenu();
+            view.printMainMenu();
 
             try {
-                String option = io.askOption("Escolha uma opcao: ", Set.of("1", "2", "3", "4", "5", "6", "7", "8", "9"));
+                String option = view.askOption("Escolha uma opcao: ", Set.of("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"));
                 switch (option) {
                     case "1" -> registerUser();
                     case "2" -> listUsers();
@@ -51,64 +49,70 @@ public class ConsoleController {
                     case "6" -> cancelParticipation();
                     case "7" -> listConfirmedEvents();
                     case "8" -> listPastEvents();
-                    case "9" -> listCityNotifications();
+                    case "9" -> listAvailableEvents();
+                    case "10" -> listCityNotifications();
                     default -> { /* Não fazer nada, continua o loop */ }
                 }
-            } catch (ConsoleIO.ExitRequestedException ex) {
+            } catch (ConsoleView.ExitRequestedException ex) {
                 running = false;
             } catch (IllegalArgumentException | IllegalStateException ex) {
-                io.showFailure(ex.getMessage());
+                view.showFailure(ex.getMessage());
             }
         }
 
-        io.println("\nAplicacao encerrada.\n");
+        view.println("\nAplicacao encerrada.\n");
     }
 
     public void close() {
-        io.close();
+        view.close();
     }
 
     private void registerUser() {
-        String name = io.askText("Nome: ");
-        String email = io.askText("E-mail: ");
-        String city = io.askText("Cidade: ");
+        String name = view.askText("Nome: ");
+        String email = view.askText("E-mail: ");
+        String city = view.askText("Cidade: ");
 
         User user = userService.registerUser(name, email, city);
-        io.showSuccess("Usuario cadastrado com ID " + user.getId() + ".");
+        view.showSuccess("Usuario cadastrado com ID " + user.getId() + ".");
     }
 
     private void createEvent() {
-        String name = io.askText("Nome do evento: ");
-        String city = io.askText("Cidade: ");
-        String address = io.askText("Endereco: ");
+        String name = view.askText("Nome do evento: ");
+        String city = view.askText("Cidade: ");
+        String address = view.askText("Endereco: ");
 
         EventCategory category = readCategory();
 
-        LocalDateTime dateTime = io.askDateTime("Data e hora (dd/MM/yyyy HH:mm): ", DATE_TIME_FORMATTER);
-        int durationMinutes = (int) io.askInteger("Duracao em minutos: ");
-        String description = io.askText("Descricao: ");
+        LocalDateTime dateTime = view.askDateTime("Data e hora (dd/MM/yyyy HH:mm): ");
+        int durationMinutes = (int) view.askInteger("Duracao em minutos: ");
+        String description = view.askText("Descricao: ");
 
         Event event = eventService.createEvent(name, city, address, category, dateTime, durationMinutes, description);
-        io.showSuccess("Evento cadastrado com ID " + event.getId() + ".");
+        view.showSuccess("Evento cadastrado com ID " + event.getId() + ".");
     }
 
     private EventCategory readCategory() {
         EventCategory[] categories = EventCategory.values();
-        io.println("Categorias:");
+        view.println("Categorias:");
         for (int i = 0; i < categories.length; i++) {
-            io.println((i + 1) + " - " + categories[i]);
+            view.println((i + 1) + " - " + categories[i]);
         }
 
         Set<String> validOptions = IntStream.rangeClosed(1, categories.length)
             .mapToObj(String::valueOf)
             .collect(Collectors.toSet());
 
-        int option = Integer.parseInt(io.askOption("Escolha a categoria: ", validOptions));
+        int option = Integer.parseInt(view.askOption("Escolha a categoria: ", validOptions));
         return categories[option - 1];
     }
 
     private void listAllEvents() {
         listEvents(eventService.listAllSortedByDateTime(), "Eventos");
+    }
+
+    private void listAvailableEvents() {
+        List<Event> events = eventService.listByStatus(EventStatus.UPCOMING, LocalDateTime.now());
+        listEvents(events, "Eventos disponiveis");
     }
 
     private void listCityNotifications() {
@@ -118,26 +122,7 @@ public class ConsoleController {
     }
 
     private void listEvents(List<Event> events, String title) {
-        io.println();
-        if (events.isEmpty()) {
-            io.println("Nenhum evento cadastrado.");
-            return;
-        }
-
-        io.println("=== " + title + " ===");
-        for (Event event : events) {
-            EventStatus status = event.getStatus(LocalDateTime.now());
-            io.println("ID: " + event.getId());
-            io.println("Nome: " + event.getName());
-            io.println("Cidade: " + event.getCity());
-            io.println("Categoria: " + event.getCategory());
-            io.println("Endereco: " + event.getAddress());
-            io.println("Data/Hora: " + event.getDateTime().format(DATE_TIME_FORMATTER));
-            io.println("Duracao (min): " + event.getDurationMinutes());
-            io.println("Status: " + status);
-            io.println("Descricao: " + event.getDescription());
-            io.println("-------------------------");
-        }
+        view.showEventList(events, title);
     }
 
     private void confirmParticipation() {
@@ -145,7 +130,7 @@ public class ConsoleController {
         long eventId = askEventId();
 
         participationService.confirmParticipation(userId, eventId);
-        io.showSuccess("Participacao confirmada.");
+        view.showSuccess("Participacao confirmada.");
     }
 
     private void cancelParticipation() {
@@ -154,9 +139,9 @@ public class ConsoleController {
 
         boolean removed = participationService.cancelParticipation(userId, eventId);
         if (removed) {
-            io.showSuccess("Participacao cancelada.");
+            view.showSuccess("Participacao cancelada.");
         } else {
-            io.showFailure("Participacao nao encontrada.");
+            view.showFailure("Participacao nao encontrada.");
         }
     }
 
@@ -165,57 +150,45 @@ public class ConsoleController {
 
         List<Event> events = participationService.listConfirmedEventsByUser(userId);
         if (events.isEmpty()) {
-            io.println("Nenhum evento confirmado para este usuario.");
+            view.println("Nenhum evento confirmado para este usuario.");
             return;
         }
 
-        io.println("=== Eventos confirmados ===");
+        view.println("=== Eventos confirmados ===");
         for (Event event : events) {
-            io.println("ID: " + event.getId());
-            io.println("Nome: " + event.getName());
-            io.println("Data/Hora: " + event.getDateTime().format(DATE_TIME_FORMATTER));
-            io.println("Status: " + event.getStatus(LocalDateTime.now()));
-            io.println("-------------------------");
+            view.showEventSummary(event);
         }
     }
 
     private void listPastEvents() {
         List<Event> events = eventService.listByStatus(EventStatus.PAST, LocalDateTime.now());
         if (events.isEmpty()) {
-            io.println("Nenhum evento ja ocorrido.");
+            view.println("Nenhum evento ja ocorrido.");
             return;
         }
 
-        io.println("=== Eventos ja ocorridos ===");
+        view.println("=== Eventos ja ocorridos ===");
         for (Event event : events) {
-            io.println("ID: " + event.getId());
-            io.println("Nome: " + event.getName());
-            io.println("Data/Hora: " + event.getDateTime().format(DATE_TIME_FORMATTER));
-            io.println("-------------------------");
+            view.showEventSummary(event);
         }
     }
 
     private void listUsers() {
-        io.println();
         List<User> users = userService.listUsers();
         if (users.isEmpty()) {
             throw new IllegalStateException("Nenhum usuario cadastrado.");
         }
-
-        io.println("=== Usuarios ===");
-        for (User user : users) {
-            io.println("ID: " + user.getId() + " | Nome: " + user.getName() + " | Cidade: " + user.getCity());
-        }
+        view.showUserList(users);
     }
 
     private long askUserId() {
         listUsers();
-        return io.askInteger("Informe o ID do usuario: ");
+        return view.askInteger("Informe o ID do usuario: ");
     }
 
     private long askEventId() {
         listEvents(eventService.listAllSortedByDateTime(), "Eventos");
-        return io.askInteger("Informe o ID do evento: ");
+        return view.askInteger("Informe o ID do evento: ");
     }
 
     private User findUserByAskedId() {

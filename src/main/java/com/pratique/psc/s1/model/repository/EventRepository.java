@@ -1,6 +1,6 @@
-package com.pratique.psc.s1.repository;
+package com.pratique.psc.s1.model.repository;
 
-import com.pratique.psc.s1.domain.entity.Event;
+import com.pratique.psc.s1.model.entity.Event;
 
 import java.util.List;
 import java.util.Optional;

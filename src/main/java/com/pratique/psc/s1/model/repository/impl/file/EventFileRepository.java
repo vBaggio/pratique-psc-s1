@@ -1,8 +1,8 @@
-package com.pratique.psc.s1.repository.impl.file;
+package com.pratique.psc.s1.model.repository.impl.file;
 
-import com.pratique.psc.s1.domain.entity.Event;
-import com.pratique.psc.s1.domain.enums.EventCategory;
-import com.pratique.psc.s1.repository.EventRepository;
+import com.pratique.psc.s1.model.entity.Event;
+import com.pratique.psc.s1.model.enums.EventCategory;
+import com.pratique.psc.s1.model.repository.EventRepository;
 
 import java.nio.file.Path;
 import java.time.LocalDateTime;

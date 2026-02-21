@@ -1,4 +1,4 @@
-package com.pratique.psc.s1.repository.impl.file;
+package com.pratique.psc.s1.model.repository.impl.file;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

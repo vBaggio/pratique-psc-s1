@@ -1,13 +1,20 @@
-package com.pratique.psc.s1.controller;
+package com.pratique.psc.s1.view;
+
+import com.pratique.psc.s1.model.entity.Event;
+import com.pratique.psc.s1.model.entity.User;
+import com.pratique.psc.s1.model.enums.EventStatus;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Set;
 import java.util.Scanner;
 
-public class ConsoleIO {
-    
+public class ConsoleView {
+
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
     private final Scanner scanner = new Scanner(System.in);
 
     public void print(String value) {
@@ -41,7 +48,8 @@ public class ConsoleIO {
         println("6 - Cancelar participacao");
         println("7 - Meus eventos confirmados");
         println("8 - Listar eventos ja ocorridos");
-        println("9 - Eventos na cidade do usuario");
+        println("9 - Listar eventos disponiveis");
+        println("10 - Eventos na cidade do usuario");
         println("0 - Sair");
         println("=========================");
     }
@@ -92,14 +100,14 @@ public class ConsoleIO {
         }
     }
 
-    public LocalDateTime askDateTime(String label, DateTimeFormatter formatter) {
+    public LocalDateTime askDateTime(String label) {
         while (true) {
             print(label);
             String value = scanner.nextLine().trim();
             checkExit(value);
 
             try {
-                return LocalDateTime.parse(value, formatter);
+                return LocalDateTime.parse(value, DATE_TIME_FORMATTER);
             } catch (DateTimeParseException ignored) {
                 showFailure("Data/hora invalida. Use dd/MM/yyyy HH:mm ou digite 0 para sair.");
             }
@@ -112,10 +120,56 @@ public class ConsoleIO {
         }
     }
 
+    public void showEventList(List<Event> events, String title) {
+        println();
+        if (events.isEmpty()) {
+            println("Nenhum evento cadastrado.");
+            return;
+        }
+        println("=== " + title + " ===");
+        for (Event event : events) {
+            showEvent(event);
+        }
+    }
+
+    public void showEvent(Event event) {
+        EventStatus status = event.getStatus(LocalDateTime.now());
+        println("ID: " + event.getId());
+        println("Nome: " + event.getName());
+        println("Cidade: " + event.getCity());
+        println("Categoria: " + event.getCategory());
+        println("Endereco: " + event.getAddress());
+        println("Data/Hora: " + formatDateTime(event.getDateTime()));
+        println("Duracao (min): " + event.getDurationMinutes());
+        println("Status: " + status);
+        println("Descricao: " + event.getDescription());
+        println("-------------------------");
+    }
+
+    public void showEventSummary(Event event) {
+        println("ID: " + event.getId());
+        println("Nome: " + event.getName());
+        println("Data/Hora: " + formatDateTime(event.getDateTime()));
+        println("Status: " + event.getStatus(LocalDateTime.now()));
+        println("-------------------------");
+    }
+
+    public void showUserList(List<User> users) {
+        println();
+        println("=== Usuarios ===");
+        for (User user : users) {
+            println("ID: " + user.getId() + " | Nome: " + user.getName() + " | Cidade: " + user.getCity());
+        }
+    }
+
     public void close() {
         scanner.close();
     }
 
     public static class ExitRequestedException extends RuntimeException {
+    }
+
+    public static String formatDateTime(LocalDateTime dateTime) {
+        return dateTime.format(DATE_TIME_FORMATTER);
     }
 }

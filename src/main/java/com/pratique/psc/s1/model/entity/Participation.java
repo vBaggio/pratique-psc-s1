@@ -1,4 +1,4 @@
-package com.pratique.psc.s1.domain.entity;
+package com.pratique.psc.s1.model.entity;
 
 import java.time.LocalDateTime;
 

@@ -1,7 +1,7 @@
-package com.pratique.psc.s1.domain.entity;
+package com.pratique.psc.s1.model.entity;
 
-import com.pratique.psc.s1.domain.enums.EventCategory;
-import com.pratique.psc.s1.domain.enums.EventStatus;
+import com.pratique.psc.s1.model.enums.EventCategory;
+import com.pratique.psc.s1.model.enums.EventStatus;
 
 import java.time.LocalDateTime;
 
@@ -117,13 +117,12 @@ public class Event {
     }
 
     public EventStatus getStatus(LocalDateTime now) {
-        LocalDateTime current = now;
         LocalDateTime end = dateTime.plusMinutes(durationMinutes);
 
-        if (current.isBefore(dateTime)) {
+        if (now.isBefore(dateTime)) {
             return EventStatus.UPCOMING;
         }
-        if (!current.isAfter(end)) {
+        if (!now.isAfter(end)) {
             return EventStatus.ONGOING;
         }
         return EventStatus.PAST;
